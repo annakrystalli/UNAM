@@ -528,7 +528,7 @@ std.dev
 
 
 
-## Acknowledgements
+### Sources of material
 
 - [A Tutorial on Using Functions in R!](https://www.datacamp.com/community/tutorials/functions-in-r-a-tutorial#gs.okPRU_w)
 
@@ -539,8 +539,11 @@ std.dev
 -[Nice R Code: Functions](http://nicercode.github.io/guides/functions/)
 
 
-### Sources of material & 
-further reading
+###  Further reading
 
 - [Official R Documentation](https://cran.r-project.org/doc/manuals/R-intro.html#Writing-your-own-functions)
 
+
+### .Rmd file
+
+<https://github.com/annakrystalli/UNAM/blob/master/Functions_in_R.Rmd>

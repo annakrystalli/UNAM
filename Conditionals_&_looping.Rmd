@@ -366,3 +366,7 @@ colMeans(air.data, na.rm = T)
 ```
 
 But the principles of applying functions over loops are still the same.
+
+### .Rmd file
+
+<https://github.com/annakrystalli/UNAM/blob/master/Conditionals_%26_looping.Rmd>
