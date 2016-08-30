@@ -1,0 +1,368 @@
+# **Looping in R**
+
+### **Anna Krystalli**
+##### ***Institute de Ecologia, UNAM 30 Aug. 2016***
+
+###### <https://annakrystalli.github.io/UNAM/Looping_in_R.nb.html>
+
+***
+<br>
+
+## What is a loop?
+
+**Process of iteration:**
+
+- automating a certain multi step process by organizing sequences of actions ('batch' processes) 
+- grouping the parts in need of repetition
+
+<br>
+
+### When do you know you need a loop?
+
+#### **-> When you seem to be repeating the same code.**
+
+Let's have a look at some data and code:
+
+
+```{r}
+air.data <- airquality
+head(air.data)
+```
+
+Say I wanted to calculate the mean of each column in the `air.data` data.frame. When I first started coding I would have probably done something like this:
+
+```{r}
+mean.1 <- mean(air.data[,1], na.rm = T)
+mean.2 <- mean(air.data[,2], na.rm = T)
+mean.3 <- mean(air.data[,3], na.rm = T)
+mean.4 <- mean(air.data[,4], na.rm = T)
+mean.5 <- mean(air.data[,5], na.rm = T)
+mean.6 <- mean(air.data[,1], na.rm = T)
+
+means <- c(mean.1, mean.2, mean.3, mean.4, mean.4, mean.6)
+
+means
+```
+
+#### **Why is the above bad?**
+
+***
+<br>
+<br>
+
+## Types of loops
+
+- **`for` loops:** Loops that execute for a prescribed number of times. 
+    - controlled by a counter or an index
+    - incremented at each iteration cycle
+    
+- **`while` or `repeat` loops:** Loops based on the onset and verification of a logical condition (for example, the value of a control variable)
+    - tested at the start (`while`) or at the end (`repeat`) of the loop construct.
+
+<img src=assets/flowchart1.png height ="400px" width="600px">    
+
+<br>
+
+
+## **`for` loops**
+
+**`for`** loops are used when the number of iterations required can be defined: eg iterating a calculation across each row of a data.frame.
+
+<img src=assets/forLoop.jpg height ="150px" width="150px"> 
+
+**General construct of a `for` loop:**
+```{r, eval=FALSE}
+for (val in sequence) {
+    statement
+}
+```
+
+
+Say we wanted to scale and center each variable in the `air.data` dataset. We can iterate the process over of each column of the dataframe in a number of ways.
+
+#### 1. We can use numeric indices:
+```{r}
+for(i in 1:ncol(air.data)){
+    air.data[,i] <- scale(air.data[,i], scale = T, center = T)
+}
+
+head(air.data)    
+```
+
+```{r, echo = F}
+air.data <- airquality
+```
+
+<br>
+
+#### 2. We can use character indices:
+```{r}
+for(var in names(air.data)){
+    air.data[,var] <- scale(air.data[,var], scale = T, center = T)
+}
+
+head(air.data)
+
+```
+
+
+
+***
+<br>
+<br>
+
+## **`while` loops**
+
+while loops can be used when the exact number of iterations is not known a priori, for example when calculating the convergence of a cost function.
+
+<img src=assets/whileLoopFlowchart.jpg height ="150px" width="150px"> 
+
+**General construct of a `while` loop:**
+```{r eval=FALSE}
+while (test_expression) {
+   statement
+}
+```
+
+Example of a while loop
+```{r}
+i <- 1
+
+while (i < 6) {
+   print(i)
+   i = i+1
+}
+```
+
+
+### nested loops
+
+We can even nest loops within loops.
+```{r}
+mat = matrix(nrow=5, ncol=5) # create a 30 x 30 matrix (of 30 rows and 30 columns)
+
+for(i in 1:nrow(mat))  # for each row
+{
+  for(j in 1:ncol(mat)) # for each column
+  {
+    mat[i,j] = i*j     # assign values based on position: product of two indexes
+  }
+}
+```
+`i` iterates over each row while `j` interates over each column.
+What have we made? The all too familiar *multiplication table*!
+
+```{r}
+mat
+```
+
+***
+<br>
+<br>
+
+
+
+## **collecting the output of loops**
+
+### **individual values**
+
+Individual values can be collected in a named **vector** by combining functions `c()` and `setNames()`.
+
+For example we could collect the means of each column of the `air.data` data.frame in a vector.
+
+```{r, echo = F}
+air.data <- airquality
+```
+
+```{r}
+mu <- NULL
+
+for(var in names(air.data)){
+    mu <- c(mu, setNames(mean(air.data[,var], na.rm = T), var))
+}
+
+mu
+
+```
+
+<br>
+
+### **vectors**
+
+Vectors of the same size can be collected in a **data.frame**. 
+
+In the scaling example before we were iterating through the `air.data` data.frame and overwriting the original values. But what if we wanted to retain the original data. We then need to collect the outputs in a new data.frame.
+
+```{r, message=F, warning=F}
+require(dplyr)
+
+scaled_data <- NULL
+
+for(var in names(air.data)){
+    
+    scaled_data <- cbind(scaled_data, 
+                         scale(air.data[,var], 
+                               scale = T, 
+                               center = T))
+}
+
+# convert to data.frame and name
+scaled_data <- as.data.frame(scaled_data) %>% setNames(names(air.data))
+
+head(scaled_data)
+```
+
+<br>
+
+### **other**
+
+more complex outputs can be collected in **lists**. For example, say we wanted to fit a linear model with `"Ozone"` as the response variable and each of the other variables as single predictors. We can loop the process and collect the outputs of the `lm()` function in a list.
+```{r}
+
+predictors <- names(air.data)[names(air.data) != "Ozone"]
+air_mods <- NULL
+
+for(predictor in predictors){
+    
+    air_mods <- c(air_mods,
+    list(lm(as.formula(paste("Ozone ~", predictor)), data = air.data)))
+}
+
+str(air_mods, max.level = 1)
+```
+<br>
+<br>
+
+***
+
+## **Altering looping sequences**
+
+### break
+
+break is a bit like `stop()` but for a loop. It is usually used with a conditional statement and if triggered, breaks out of the current loop.
+
+<img src=assets/breakFlowchart.jpg height ="150px" width="150px"> 
+
+```{r}
+x <- 1:5
+
+for (val in x) {
+    if (val == 3){
+        break
+    }
+    print(val)
+}
+```
+
+In this example, we iterate over the vector `x`, which has consecutive numbers from 1 to 5. Inside the for loop we have used a condition to **break if the current value is equal to 3**. As we can see from the output, the loop terminates when it encounters the break statement.
+
+
+### next
+
+**`next`** is similarly used in conjunction with a conditional statement but if triggered just moves on to the next iteration.
+
+<img src=assets/nextFlowchart.jpg height ="150px" width="150px"> 
+
+```{r}
+x <- 1:5
+
+for (val in x) {
+    if (val == 3){
+        next
+    }
+    print(val)
+}
+```
+
+In this example, we use the `next` statement inside a condition to check if the value is equal to 3. If the value is equal to 3, the **current evaluation stops** (value is not printed) but the **loop continues** with the next iteration. The output reflects this.
+
+This can be particularly useful if we want to, for example, test for an error and discard an iteration if the error occurs
+
+
+<br>
+<br>
+
+***
+
+## vectorisation (the apply function family)
+
+It's always good to start learning the principles of iteration through loops. **Simple loops can be more understandable to a human reader**
+
+However, loops can be slow, and in cases were computation time of a loop becomes a bottleneck, it is good to know a bit about vectorisation. 
+
+So let's see what our `for` loop examples look like vectorised:
+
+<br>
+
+### apply
+
+**`apply`** iterates over the margins of an array. We can use it to calculate the means of each column:
+
+```{r}
+mu <- apply(air.data, MARGIN = 2, FUN = function(x){mean(x, na.rm = T)})
+
+```
+
+<br>
+
+### lapply
+
+The **`lapply`** takes a **`list`** as an input (data.frames are lists) and apply a function over each element of the list:
+
+```{r}
+
+scaled_data <- lapply(air.data, FUN = function(x){
+    scale(x, scale = T, center = T)}) %>% 
+    data.frame() %>%
+    setNames(names(air.data))
+
+head(scaled_data)
+```
+
+<br>
+
+### mapply
+
+The **`mapply`** allows us to pass multiple iterated arguments to a function. It has a different structure as the function is the first argument, any arguments to be passed to the function and iterated over are specified in `...` and any arguments to be used as is by the function are supplied in the argument `MoreArgs`.
+
+As an example, we will replicate the default behaviour of `scale` to center on the mean by supply are own vector of calculated means `mu`.
+
+```{r}
+
+scaled_data <- mapply(FUN = function(x, center){scale(x, scale = T, 
+                                              center = center)},
+                      x = air.data, center = mu) %>% 
+    data.frame() %>%
+    setNames(names(air.data))
+
+head(scaled_data)
+```
+
+
+### Things to remember:
+
+- loops are evaluated in the global environment -> can get messy!
+- if you've got a lot of code within your loop, **consider writing a function**
+
+***
+
+<br>
+<br>
+
+
+
+### Cheats
+
+A lot of the examples I showed are actually addressed by these or other functions. 
+
+eg `scale()` can be applied directly to a data.frame:
+```{r}
+head(scale(air.data))
+```
+
+and there are in-built functions for calculating the mean of columns:
+```{r}
+colMeans(air.data, na.rm = T)
+```
+
+But the principles of applying functions over loops are still the same.

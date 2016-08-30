@@ -1,0 +1,546 @@
+
+# **Functions in R**
+
+### **Anna Krystalli**
+##### ***Institute de Ecologia, UNAM 30 Aug. 2016***
+
+###### <https://annakrystalli.github.io/UNAM/Functions_in_R.nb.html>
+***
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F)
+```
+
+<br>
+
+<img src="assets/shield_image_course.png" height ="200px" width="200px">
+
+
+
+## What are functions?
+
+#### Code written to carry out specific task
+
+Functions used to:
+
+- incorporate sets of instructions that we want to use repeatedly
+- contain complex code in a neat sub-program
+- reduce opportunity for errors
+- make code more readable
+
+usually:
+
+- accepts parameters (arguments) <- `INPUT`
+- returns value(s) <- `OUTPUT`
+
+<br>
+
+## functions in R
+
+### R is a functional programming language! 
+#### provides many tools for the creation and manipulation of functions.
+
+> “To understand computations in R, two slogans are helpful:
+>
+> - Everything that exists is an object.
+> - Everything that happens is a function call."
+> 
+> John Chambers
+
+even `+` and indexing through `[ ]`!
+```{r}
+`+`(3,4)
+`[`(1:10, 1)
+
+```
+
+<br>
+
+**You can do anything with functions that you can do with vectors:**
+
+- assign them to variables 
+- store them in lists
+- pass them as arguments to other functions 
+- create them inside functions
+- return them as the result of a function
+
+
+
+
+
+***
+<br>
+<br>
+
+## **function basics**
+
+**Basic structure**
+```{r, eval=FALSE}
+function(arglist){body}
+```
+*TIP: in Rstudio, typing the `fun` snippet inserts an R function definition:*
+```{r}
+name <- function(variables) {
+    
+}
+```
+Just try typing `fun` 
+
+<br>
+<br>
+
+## example function
+
+Let's write a function that will calculate the standard deviation of the values in a vector x.
+```{r}
+std.dev <- function(x){
+    n <- length(x)
+    xbar <- sum(x)/n
+    diff <- x - xbar
+    sum.sq <- sum(diff^2)
+    var <- sum.sq / (n-1)
+    sqrt(var)
+}
+
+```
+
+
+## function environment
+
+- every time a function is called, a new environment is created to host execution.
+- each invocation is completely independent of previous ones
+- variables used within are ***local***, e.g. their scope lies within - and is limited to - the function itself. They are therefore **invisible outside the function body**
+```{r, error=TRUE}
+
+s.d <- std.dev(1:10)
+s.d
+xbar
+
+```
+
+***
+<br>
+<br>
+
+## elements of a function
+
+### function name
+
+This can be any valid variable name, but you should avoid using names that are used elsewhere in R, such as `dir`, `function`, `plot`, etc
+
+- choose descriptive names
+- use verbs
+- check whether they are already in use: `? function.name`
+
+(you can access a function from a specific package using `package.name::function.name`)
+
+<br>
+
+### arguments
+
+Functions can have **any number of arguments**. These can be **any R object:** numbers, strings, arrays, data frames, of even pointers to other functions; anything that is needed for the function.name function to run.
+```{r} 
+formals(std.dev)
+```
+
+<br>
+
+The **`...`**, or **ellipsis**, element in the definition of a function allows for other arguments to be passed into the function, and passed onto to another function. 
+
+```{r}
+ellipsis_example <- function(x, ...) {
+    input_list <- list(...)
+    output_list <- lapply(X=input_list, summary)
+    return(output_list)
+}
+ellipsis_example(x = 1, a=1:10,b=11:20,c=21:30)
+```
+
+<br>
+<br>
+
+### body
+
+The function code between the `{}` brackets is run every time the function is called. Ideally functions are short and do just one thing. 
+```{r} 
+body(std.dev)
+```
+
+<br>
+<br>
+
+### return value
+
+The last line of the code is the value that will be returned by the function. It is not necessary that a function return anything, for example a function that makes a plot might not return anything, whereas a function that does a mathematical operation might return a number, or a list.
+
+***
+<br>
+<br>
+
+## **arguments & environment**
+
+All arguments required for computation must be supplied.
+
+```{r, echo=FALSE}
+rm(list=ls())
+```
+missing arguments not required for computation are fine:
+```{r, error=TRUE}
+f1 <- function(a, b, c){a + b}
+f1(a = 10 , b = 20)
+```
+objects required by function will be sought first in the ***local environment***. If an argument specified in the function is missing, it will return an error, even if such an object exists in the global environment.
+```{r, error=TRUE}
+b <- 10
+f1 <- function(a, b){a + b}
+f1(a = 10)
+f1(a = 10 , b = 20)
+```
+
+Objects required by computation but not specified as function arguments will be sought in the containing environment iteratively until it reaches the ***global environment***.
+
+```{r, error=TRUE}
+b <- 10
+f2 <- function(a){a + b}
+f2(a = 10)
+rm(b) # remove object b
+f2(a = 10)
+```
+
+<br>
+
+### **default values**
+Default values for arguments can also be supplied when writing the functions
+```{r, error=TRUE}
+f3 <- function(a, b = 20){a + b}
+f3(a = 10)
+f3(a = 10, b = 10)
+```
+- can be a bit dangerous depending on objects from outside the function environment.
+- consider using `...`
+
+<br>
+<br>
+
+## **outputs**
+
+A function by default returns the last 'thing' evaluated
+```{r}
+f4 <- function(x){x + 10}
+f4(10) # returns a value
+
+f5 <- function(x){
+    y <- x + 10}
+f5(10) # return an object which needs to be assigned
+z <- f5(10)
+z
+
+f6 <- function(x){
+    y <- x + 10
+    return(y)} 
+f6(10) # returns a value
+v <- f6(10)
+v
+```
+
+I generally advise you always use `return()` to specify the outputs of your functions. 
+
+You can also use it conditionally to return different values or hault evaluation and return back to the calling environment:
+```{r}
+f7 <- function(x) {
+    y <- x - 10
+    if(y < 0){return(NA)}else{
+        y <- 2 * y
+        return(y)}
+}
+
+f7(20)
+f7(5)
+```
+
+<br>
+
+### **multiple outputs**
+
+If you want to **return multiple values/objects**, you can collect objects created within a function in a **list**. Let's say instead of just the std.dev, we also wanted the mean (`xbar`) and `n` returned. No problem. Just collect them in a list.
+```{r}
+std.dev <- function(x){
+    n <- length(x)
+    xbar <- sum(x)/n
+    diff <- x - xbar
+    sum.sq <- sum(diff^2)
+    var <- sum.sq / (n-1)
+    s.d <- sqrt(var)
+    
+    return(list(s.d, xbar, n))
+}
+
+std.dev(1:10)
+
+```
+- Lists can collect diverse and complex outputs.
+- This is basically what outputs of function like `lm` are, a list.
+
+***
+
+<br>
+<br>
+
+## Calling a function given a list of arguments
+
+Suppose you had a list of function arguments:
+
+```{r}
+args <- list(c(1:10, NA), na.rm = TRUE)
+```
+You could you then send that list to `mean()` by using `do.call()`:
+
+```{r}
+do.call(mean, list(1:10, na.rm = TRUE))
+```
+
+***
+
+<br>
+<br>
+
+## **function pipes**
+
+If you have a long workflow of computations:
+
+- break it up into logical blocks 
+- write function for each
+- write functions so that output from one is the first argument to the next
+- use package `dplyr` and the **pipe** shorthand `%>%` to set up **function pipeline**
+```{r, eval=F}
+install.packages("dplyr")
+```
+
+Say I want to prepare a vector of values by removing NAs, scaling and centering the values. First I create a list containg the vector of values as well as an element to track the status of the process.
+```{r}
+require(dplyr)
+l <- list(x = c(1:10, NA), status = NULL)
+```
+
+Then I write three functions that will receive and return the list.
+```{r}
+rmNAs <- function(X){
+    X$x <- na.omit(X$x)
+    X$status <- c(X$status, "NAs_removed")
+    return(X)
+}
+         
+scaleVector <- function(X){
+    X$x <- scale(X$x, scale = T)
+    X$status <- c(X$status, "scaled")
+    return(X)
+}          
+          
+centerVector <- function(X){
+    X$x <- scale(X$x, center = T)
+    X$status <- c(X$status, "centered")
+    return(X)
+}  
+
+```
+
+Then I set up a pipeline with the functions and pass the vector through:
+```{r}
+
+l %>% rmNAs() %>% scaleVector %>% centerVector
+
+```
+more on pipelines: https://rpubs.com/tjmahr/pipelines_2015
+
+***
+
+<br>
+<br>
+
+## **anonymous functions**
+
+If you just want to use a function once, you don't have to name it:
+```{r}
+(function(x) x * 10)(10)
+```
+Anonymous functions can be particularly useful in conjunction with vectorising functions like `lapply()`. Here's an unammed function for calculating the mean of a vector `x`. In the following example, the input `x` to the function is each element of the list `l`.
+```{r}
+l <- list(1:5, 5:7)
+lapply(l, FUN = function(x){sum(x)/length(x)})
+```
+
+***
+
+<br>
+<br>
+
+## **sourcing functions**
+
+I often write functions associated with a particular project.
+
+I will save all the functions in a separate `"project.name_functions.R"` script. I'll then call that script to make all the functions available to my workflow.
+
+```{r, eval=FALSE}
+source("project.name_functions.R")
+```
+Remember to document details of your functions!
+
+***
+
+<br>
+<br>
+
+## **Avoiding errors**
+
+Let's start with another example of a function:
+```{r}
+getY <- function(X.matrix, b.vec, a.scalar) {
+
+    # multiply the matrix by the vector using %*% operator
+    Xb.prod <- X.matrix %*% b.vec
+
+    # multiply the two resulting objects together to get a final object
+    y <- Xb.prod * a.scalar
+
+    # return the result
+    return(y)
+}
+```
+Clearly this function requires that the length of the vector and the number of columns in the matrix match.
+
+Let's make some objects to pass to the function:
+```{r}
+mat <- cbind(c(1, 3, 4), c(5, 4, 3))
+vec <- c(4, 3)
+
+getY(mat, vec, 3)
+```
+
+In this case the function works because the number of columns of matrix `mat` (`r ncol(mat)`) and the length of `vec` (`r length(vec)`) match.
+
+#### **How can we prevent or identify errors?**
+
+<br>
+
+### **1. sanity checks**
+
+We can adapt the function and use the `print()` function to print off values of interest, for example the dimensions of arguments of concern
+```{r}
+getY <- function(X.matrix, b.vec, a.scalar) {
+    
+    # print diagnostics
+    print(dim(X.matrix))
+    print(length(b.vec))
+
+    # multiply the matrix by the vector using %*% operator
+    Xb.prod <- X.matrix %*% b.vec
+
+    # multiply the two resulting objects together to get final y
+    y <- Xb.prod * a.scalar
+    
+    return(y)
+}
+
+getY(mat, vec, 3)
+```
+
+<br>
+
+### **2. debugging**
+
+When you have an error, one thing you can do is use R’s built-in debugger debug() to find at what point the error occurs.
+```{r, error=TRUE}
+debug(getY)
+getY(X.matrix = mat, b.vec = c(2, 3, 6, 4, 1), a.scalar = 9)
+```
+
+<br>
+
+## **3. stopping and error messages**
+
+To ensure functions run smoothly you can use functions `stop()` or `stopifnot()` to hault the execution of functions should specific conditions not be met and flag with an appropriate and informative error
+
+#### **`stop()`**
+
+stops execution and returns error message. Usually used with conditional statements
+```{r, error=T}
+f1 <- function(x) {
+    if(!is.numeric(x)){stop("x is not numeric")}else{
+        return(2*x)
+    }
+}
+f1(10)
+f1("a")
+```
+
+#### **`stopifnot()`**
+tests the conditional statements supplied as arguments and stops execution if any return `FALSE`
+```{r, error=T}
+f1 <- function(x) {
+    stopifnot(is.numeric(x))
+    return(2*x)
+}
+f1(10)
+f1("a")
+
+```
+
+<br>
+
+## Testing
+
+Each function should be easy to test, then you can “freeze” it. Write test cases, which can be automatically checked.
+- [Unit Testing in R: The Bare Minimum](http://www.johnmyleswhite.com/notebook/2010/08/17/unit-testing-in-r-the-bare-minimum/)
+
+
+<br>
+
+***
+
+## Tips & tricks
+
+- **Keep your functions short.** Remember you can use them to call other functions!
+    - code cleaner and easily testable.
+    - code easy to update
+- **Document** what the inputs to the function are, what the function does, and what the output is.
+- **Check for errors** along the way
+- Try out your function with **simple examples** to make sure it’s working properly
+- **Use debugging and error messages**, as well as sanity checks as you build your function.
+- Avoid mixing computation and plotting in the same
+function
+eg. 
+```{r, eval=FALSE}
+res <- some.computation(par1, par2, par3) 
+plot(res)
+```
+
+- it can be useful to look at the code of a function. Type the function name without the `( )`
+    - Will work on any function apart from base functions which are written in C
+```{r}
+std.dev
+```
+
+
+
+
+
+
+
+
+
+## Acknowledgements
+
+- [A Tutorial on Using Functions in R!](https://www.datacamp.com/community/tutorials/functions-in-r-a-tutorial#gs.okPRU_w)
+
+- [Advanced R by Hadley Wickham::functions](http://adv-r.had.co.nz/Functions.html)
+
+- [How to write and debug an R function](https://www.r-bloggers.com/how-to-write-and-debug-an-r-function/)
+
+-[Nice R Code: Functions](http://nicercode.github.io/guides/functions/)
+
+
+### Sources of material & 
+further reading
+
+- [Official R Documentation](https://cran.r-project.org/doc/manuals/R-intro.html#Writing-your-own-functions)
+
