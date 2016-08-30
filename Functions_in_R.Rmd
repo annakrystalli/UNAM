@@ -38,7 +38,7 @@ usually:
 ## functions in R
 
 ### R is a functional programming language! 
-#### provides many tools for the creation and manipulation of functions.
+**provides many tools for the creation and manipulation of functions.**
 
 > “To understand computations in R, two slogans are helpful:
 >
@@ -91,7 +91,7 @@ Just try typing `fun`
 
 ## example function
 
-Let's write a function that will calculate the standard deviation of the values in a vector x.
+Let's write a function that will **calculate the standard deviation** of the **values in a vector `x`**.
 ```{r}
 std.dev <- function(x){
     n <- length(x)
@@ -107,8 +107,8 @@ std.dev <- function(x){
 
 ## function environment
 
-- every time a function is called, a new environment is created to host execution.
-- each invocation is completely independent of previous ones
+- every time a function is called, a **new environment** is created to host execution.
+- each invocation is **completely independent of previous ones**
 - variables used within are ***local***, e.g. their scope lies within - and is limited to - the function itself. They are therefore **invisible outside the function body**
 ```{r, error=TRUE}
 
@@ -139,6 +139,8 @@ This can be any valid variable name, but you should avoid using names that are u
 ### arguments
 
 Functions can have **any number of arguments**. These can be **any R object:** numbers, strings, arrays, data frames, of even pointers to other functions; anything that is needed for the function.name function to run.
+
+- Again, use descriptive names for arguments
 ```{r} 
 formals(std.dev)
 ```
@@ -155,6 +157,7 @@ ellipsis_example <- function(x, ...) {
 }
 ellipsis_example(x = 1, a=1:10,b=11:20,c=21:30)
 ```
+
 
 <br>
 <br>
@@ -492,10 +495,12 @@ f1("a")
 Each function should be easy to test, then you can “freeze” it. Write test cases, which can be automatically checked.
 - [Unit Testing in R: The Bare Minimum](http://www.johnmyleswhite.com/notebook/2010/08/17/unit-testing-in-r-the-bare-minimum/)
 
+***
 
 <br>
+<br>
 
-***
+
 
 ## Tips & tricks
 
@@ -520,13 +525,45 @@ plot(res)
 std.dev
 ```
 
+***
 
+<br>
+<br>
 
+### Exercises:
 
+**source: <https://www.r-bloggers.com/functions-exercises/>**
 
+**Exercise 1**
+Create a function that will return the sum of 2 integers.
 
+**Exercise 2**
+Create a function what will return TRUE if a given integer is inside a vector.
 
+**Exercise 3**
+Create a function that given a data frame will print by screen the name of the column and the class of data it contains (e.g. Variable1 is Numeric).
 
+**Exercise 4**
+Create the function unique, which given a vector will return a new vector with the elements of the first vector with duplicated elements removed.
+
+**Exercise 5**
+Create a function that given a vector and an integer will return how many times the integer appears inside the vector.
+
+**Exercise 6**
+Create a function that given a vector will print by screen the mean and the standard deviation, it will optionally also print the median.
+
+**Exercise 7**
+Create a function that given an integer will calculate how many divisors it has (other than 1 and itself). Make the divisors appear by screen.
+
+**Exercise 8**
+Create a function that given a data frame, and a number or character will return the data frame with the character or number changed to NA.
+
+#### [**SOLUTIONS**](http://r-exercises.com/2016/02/07/functions-exercises-solutions/)
+
+***
+
+<br>
+<br>
 
 ### Sources of material
 

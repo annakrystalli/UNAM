@@ -367,6 +367,68 @@ colMeans(air.data, na.rm = T)
 
 But the principles of applying functions over loops are still the same.
 
+
+***
+
+<br>
+<br>
+
+### **Exercises**
+
+#### **source: <http://r-exercises.com/2016/06/01/scripting-loops-in-r/>**
+
+**Exercise 3**
+
+With, i <- 1, write a while() loop that prints the odd numbers from 1 through 7.
+
+**Exercise 4**
+
+Using the following variables:
+
+msg <- c("Hello")
+i <- 1
+
+Write a `while()` loop that increments the variable, `i`, 6 times, and prints `msg` at every iteration.
+
+**Exercise 5**
+
+Write a `for()` loop that prints the first four numbers of this sequence: 
+```{r}
+x <- c(7, 4, 3, 8, 9, 25)
+```
+
+**Exercise 6**
+
+For the next exercise, write a for() loop that prints all the letters in:
+```{r}
+y <- c("q", "w", "e", "r", "z", "c")
+```
+
+
+**Exercise 7**
+
+Using `i <- 1`, write a `while()` loop that prints the variable, `i`, (that is incremented from 1 – 5), and uses break to exit the loop if `i` equals 3.
+
+**Exercise 8**
+
+Write a nested loop, where the **outer `for()` loop** increments `a` 3 times, and the **inner `for()` loop** increments `b` 3 times. The `break` statement exits the inner `for()` loop after 2 incrementations. The nested loop prints the values of variables, `a` and `b`.
+
+**Exercise 9**
+
+Write a `while()` loop that **prints the variable, `i`**, that is incremented from 2 – 5, and uses the next statement, to skip the printing of the number 3.
+
+**Exercise 10**
+
+Write a for() loop that uses next to print all values except `3` in the following variable: `i` <- 1:5
+
+#### [**SOLUTIONS**](http://r-exercises.com/2016/06/01/scripting-loops-in-r-solutions/)
+
+
+
+***
+
+<br>
+<br>
 ### .Rmd file
 
 <https://github.com/annakrystalli/UNAM/blob/master/Conditionals_%26_looping.Rmd>
